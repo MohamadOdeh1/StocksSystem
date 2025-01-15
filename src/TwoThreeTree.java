@@ -74,7 +74,6 @@ public class TwoThreeTree<K extends Comparable<K>,V>{
     public Node<K, V> insertAndSplit(Node<K, V> x, Node<K, V> z) {
         // Current children of x
         if (x != null) {
-            System.out.println("Current children of x: " + x.getLeftChild() + " " + x.getMiddleChild() + " " + x.getRightChild());
             Node<K, V> l = x.getLeftChild();    // Left child
             Node<K, V> m = x.getMiddleChild();  // Middle child
             Node<K, V> r = x.getRightChild();   // Right child (could be null)
@@ -131,7 +130,7 @@ public class TwoThreeTree<K extends Comparable<K>,V>{
         Node<K, V> y = this.root;
 
         // Step 3: Traverse down the tree until a leaf node is reached
-        while (!y.isLeaf()) {
+        while (y!= null && !y.isLeaf()) {
             if (z.getKey().compareTo(y.getLeftChild().getKey()) < 0) {
                 // Go to the left child
                 y = y.getLeftChild();
@@ -145,35 +144,73 @@ public class TwoThreeTree<K extends Comparable<K>,V>{
         }
 
         // Step 4: Insert the new leaf into the tree at the correct position
-        Node<K, V> x = y.getParentNode(); // Parent of the leaf
-        z = insertAndSplit(x, z); // Insert and handle potential splits
+        if(y!=null){
+            Node<K, V> x = y.getParentNode(); // Parent of the leaf
+            z = insertAndSplit(x, z); // Insert and handle potential splits
 
-        // Step 5: Handle upward propagation of splits
-        while (x != null) {
-            if (z == null) {
-                // No split happened, update the keys of the current internal node
-                updateKey(x);
-                break;
+            // Step 5: Handle upward propagation of splits
+            while (x != null) {
+                if (z == null) {
+                    // No split happened, update the keys of the current internal node
+                    updateKey(x);
+                    break;
+                }
+
+                // If we need to propagate a split upwards
+                x = x.getParentNode();
+                z = insertAndSplit(x, z); // Recursively propagate the split
             }
 
-            // If we need to propagate a split upwards
-            x = x.getParentNode();
-            z = insertAndSplit(x, z); // Recursively propagate the split
+            // Step 6: Handle the case where the root is split
+            if (z != null) {
+                // Create a new root node
+                Node<K, V> w = new Node<>();
+                w.setChildren(this.root, z, null);
+                this.root = w; // Update the root of the tree
+                updateKey(w); // Update the new root's key
+            }
+
+            // Increment the size of the tree
+            this.size += 1;
+        }
+    }
+    public void printTreeContents(Node<K, V> node, int depth) {
+        if (node == null) {
+            return; // Base case: node is null
         }
 
-        // Step 6: Handle the case where the root is split
-        if (z != null) {
-            // Create a new root node
-            Node<K, V> w = new Node<>();
-            w.setChildren(this.root, z, null);
-            this.root = w; // Update the root of the tree
-            updateKey(w); // Update the new root's key
+        // If node is a leaf, print its key and value
+        if (node.isLeaf()) {
+            System.out.println(" ".repeat(depth * 4) + "Leaf - Key: " + node.getKey() + ", Value: " + node.getValue());
+            return;
         }
 
-        // Increment the size of the tree
-        this.size += 1;
+        // If node is an internal node, traverse its children and print their contents
+        System.out.println(" ".repeat(depth * 4) + "Internal Node - Key: " + node.getKey());
+
+        // Visit left child
+        if (node.getLeftChild() != null) {
+            System.out.println(" ".repeat((depth + 1) * 4) + "Left Child:");
+            printTreeContents(node.getLeftChild(), depth + 2);
+        }
+
+        // Visit middle child
+        if (node.getMiddleChild() != null) {
+            System.out.println(" ".repeat((depth + 1) * 4) + "Middle Child:");
+            printTreeContents(node.getMiddleChild(), depth + 2);
+        }
+
+        // Visit right child
+        if (node.getRightChild() != null) {
+            System.out.println(" ".repeat((depth + 1) * 4) + "Right Child:");
+            printTreeContents(node.getRightChild(), depth + 2);
+        }
     }
 
+    public void printTree() {
+        System.out.println("Printing Tree Contents:");
+        printTreeContents(root, 0); // Start printing from the root node at depth 0
+    }
     @Override
     public String toString() {
         return "TwoThreeTree{" +

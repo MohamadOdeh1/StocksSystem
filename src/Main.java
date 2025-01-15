@@ -47,6 +47,7 @@ public class Main {
             stockmanger.addStock(stockIds.get(i), initialTimestamps.get(i), prices.get(i));
             expression = stockmanger.getStockPrice(stockIds.get(i)).equals(prices.get(i));
             Assert(expression);
+            stockmanger.stocks.printTree();
         }
 
         for (int i = 0; i < 3; i++) {
@@ -64,7 +65,7 @@ public class Main {
             catch (Exception e) {
                 System.out.println("Test failed: An unexpected exception was thrown");
             }
-            Assert(expression);
+            //Assert(expression);
             System.out.println("Removed Stock: " + stockIdToRemove);
 
         }

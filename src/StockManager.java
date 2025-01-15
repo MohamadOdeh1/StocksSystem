@@ -14,10 +14,6 @@ public class StockManager {
         stocks.root.getLeftChild().setKey("");
         stocks.root.getMiddleChild().setKey("ZZZZZZZZZZZZZZZZZZ");
         stocks.root.setKey("ZZZZZZZZZZZZZZZZZZ");
-        System.out.println("The root after"+stocks.root);
-        System.out.println("Left child of the root:"+stocks.root.getLeftChild().toString());
-        System.out.println("Middle child of the root:"+stocks.root.getMiddleChild().toString());
-        System.out.println(stocks.root.getRightChild());
     }
 
     // 2. Add a new stock
@@ -38,9 +34,7 @@ public class StockManager {
 
     // 5. Get the current price of a stock
     public Float getStockPrice(String stockId) {
-        System.out.println("Searching for Stock ID: " + stockId);
         Node<String, Float> temp = stocks.search(stocks.root, stockId);
-        System.out.println("Node found: " + temp);
         if (temp == null) {
             throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
         }
