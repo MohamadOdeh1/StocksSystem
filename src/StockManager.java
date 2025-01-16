@@ -1,64 +1,94 @@
 public class StockManager {
-    // add code here
     TwoThreeTree<String, Float> stocks;
+
     public StockManager() {
-        // add code here
         stocks = new TwoThreeTree<>();
     }
 
-    // 1. Initialize the system
     public void initStocks() {
-        // add code here
         stocks.init();
-        System.out.println("The root before:"+stocks.root);
         stocks.root.getLeftChild().setKey("");
-        stocks.root.getMiddleChild().setKey("ZZZZZZZZZZZZZZZZZZ");
-        stocks.root.setKey("ZZZZZZZZZZZZZZZZZZ");
+        stocks.root.getMiddleChild().setKey("ZZZZZZZZZ");
+        stocks.root.setKey("ZZZZZZZZZ");
     }
 
-    // 2. Add a new stock
     public void addStock(String stockId, long timestamp, Float price) {
-        // add code here
-        stocks.insert(stockId, price,timestamp);
+        if (stockId == null || stockId.isEmpty()) {
+            throw new IllegalArgumentException("Stock ID cannot be null or empty.");
+        }
+
+        if (price == null || price < 0) {
+            throw new IllegalArgumentException("Price must be a non-negative value.");
+        }
+
+        stocks.insert(stockId, price, timestamp);
+        System.out.println("Stock added: " + stockId);
     }
 
-    // 3. Remove a stock
     public void removeStock(String stockId) {
-        // add code here
+        if (stockId == null || stockId.isEmpty()) {
+            throw new IllegalArgumentException("Stock ID cannot be null or empty.");
+        }
+
+        Node<String, Float> node = stocks.search(stocks.root, stockId);
+        if (node == null) {
+            throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
+        }
+
+        // Implement the logic to remove the node from the tree
     }
 
-    // 4. Update a stock price
     public void updateStock(String stockId, long timestamp, Float priceDifference) {
-        // add code here
+        if (stockId == null || stockId.isEmpty()) {
+            throw new IllegalArgumentException("Stock ID cannot be null or empty.");
+        }
+
+        if (priceDifference == null) {
+            throw new IllegalArgumentException("Price difference cannot be null.");
+        }
+
+        Node<String, Float> node = stocks.search(stocks.root, stockId);
+        if (node == null) {
+            throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
+        }
+
+        node.setValue(node.getValue() + priceDifference);
     }
 
-    // 5. Get the current price of a stock
     public Float getStockPrice(String stockId) {
+        if (stockId == null || stockId.isEmpty()) {
+            throw new IllegalArgumentException("Stock ID cannot be null or empty.");
+        }
+
+        System.out.println("Searching for stock ID: " + stockId);
         Node<String, Float> temp = stocks.search(stocks.root, stockId);
         if (temp == null) {
             throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
         }
-        return temp.value;
+
+        System.out.println("Found stock ID: " + stockId + " with price: " + temp.getValue());
+        return temp.getValue();
     }
 
-
-    // 6. Remove a specific timestamp from a stock's history
     public void removeStockTimestamp(String stockId, long timestamp) {
-        // add code here
+        // Implement the logic to remove a specific timestamp from a stock's history
     }
 
-    // 7. Get the amount of stocks in a given price range
     public int getAmountStocksInPriceRange(Float price1, Float price2) {
-        // add code here
+        if (price1 == null || price2 == null) {
+            throw new IllegalArgumentException("Prices cannot be null.");
+        }
+
+        // Implement logic to count stocks in the given price range
         return 0;
     }
 
-    // 8. Get a list of stock IDs within a given price range
     public String[] getStocksInPriceRange(Float price1, Float price2) {
-        // add code here
+        if (price1 == null || price2 == null) {
+            throw new IllegalArgumentException("Prices cannot be null.");
+        }
+
+        // Implement logic to get stock IDs in the given price range
         return null;
     }
-
 }
-
-
