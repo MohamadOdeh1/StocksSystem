@@ -137,29 +137,78 @@ public class TwoThreeTree<K extends Comparable<K>, V> {
     }
 
     public void remove(K key) {
-        Node<K, V> node = search(root, key);
-        if (node == null) {
-            throw new IllegalArgumentException("Key not found");
+        Node<K, V> nodeToRemove = search(root, key);
+        if (nodeToRemove == null) {
+            System.out.println("Key not found in the tree.");
+            return;
         }
-        remove(node);
+
+        deleteNode(nodeToRemove);
+        size--;
     }
 
-    private void remove(Node<K, V> node) {
-        if (node.isLeaf()) {
-            Node<K, V> parent = node.getParentNode();
-            if (parent.getLeftChild() == node) {
-                parent.setChildren(null, parent.getMiddleChild(), parent.getRightChild());
-            } else if (parent.getMiddleChild() == node) {
-                parent.setChildren(parent.getLeftChild(), null, parent.getRightChild());
-            } else if (parent.getRightChild() == node) {
-                parent.setChildren(parent.getLeftChild(), parent.getMiddleChild(), null);
+    public Node<K, V> borrowOrMerge(Node<K, V> y) {
+        Node<K, V> z = y.getParentNode();
+        if (y == z.getLeftChild()) {
+            Node<K, V> x = z.getMiddleChild();
+            if (x != null && x.getRightChild() != null) {
+                y.setChildren(y.getLeftChild(), x.getLeftChild(), null);
+                x.setChildren(x.getMiddleChild(), x.getRightChild(), null);
+            } else if (x != null) {
+                x.setChildren(y.getLeftChild(), x.getLeftChild(), x.getMiddleChild());
+                y = null;
+                z.setChildren(x, z.getRightChild(), null);
             }
-            updateKey(parent);
+            return z;
+        }
+        if (y == z.getMiddleChild()) {
+            Node<K, V> x = z.getLeftChild();
+            if (x != null && x.getRightChild() != null) {
+                y.setChildren(x.getRightChild(), y.getLeftChild(), null);
+                x.setChildren(x.getLeftChild(), x.getMiddleChild(), null);
+            } else if (x != null) {
+                x.setChildren(x.getLeftChild(), x.getMiddleChild(), y.getLeftChild());
+                y = null;
+                z.setChildren(x, z.getRightChild(), null);
+            }
+        }
+        Node<K, V> x = z.getMiddleChild();
+        if (x != null && x.getRightChild() != null) {
+            y.setChildren(x.getRightChild(), y.getLeftChild(), null);
+            x.setChildren(x.getLeftChild(), x.getMiddleChild(), null);
+        } else if (x != null) {
+            y = null;
+            z.setChildren(z.getLeftChild(), x, null);
+        }
+        return z;
+    }
+
+    public void deleteNode(Node<K, V> x) {
+        Node<K, V> y = x.getParentNode();
+        if (x == y.getLeftChild()) {
+            y.setChildren(y.getMiddleChild(), y.getRightChild(), null);
+        } else if (x == y.getMiddleChild()) {
+            y.setChildren(y.getLeftChild(), y.getRightChild(), null);
         } else {
-            // Handle the case where the node to be removed is internal
-            // This case is more complex and involves tree rebalancing
+            y.setChildren(y.getLeftChild(), y.getMiddleChild(), null);
+        }
+        x = null;
+        while (y != null) {
+            if (y.getMiddleChild() != null) {
+                updateKey(y);
+                y = y.getParentNode();
+            } else if (y != this.root) {
+                y = borrowOrMerge(y);
+            } else {
+                this.root = y.getLeftChild();
+                if (this.root != null) {
+                    this.root.setParentNode(null);
+                }
+                y = null;
+            }
         }
     }
+
 
     public void printTree() {
         if (this.root == null) {
