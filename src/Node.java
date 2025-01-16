@@ -6,7 +6,7 @@ class Node<K, V> {
     Node<K, V> left;
     Node<K, V> middle;
     Node<K, V> right;
-
+    TwoThreeTree<Long, Float> priceHistory;
     public Node() {}
 
     public Node(K key, V value, long timestamp) {
@@ -14,6 +14,7 @@ class Node<K, V> {
         this.value = value;
         this.timestamp = timestamp;
         this.left = this.middle = this.right = null;
+        this.priceHistory = new TwoThreeTree<>(); // Initialize the price history tree
     }
 
     public boolean isLeaf() {
@@ -64,7 +65,21 @@ class Node<K, V> {
         if (middle != null) middle.setParentNode(this);
         if (right != null) right.setParentNode(this);
     }
+    public float getPrice() {
+        Node<Long, Float> lastPriceNode = priceHistory.root;
+        while (lastPriceNode != null && lastPriceNode.right != null) {
+            lastPriceNode = lastPriceNode.right;
+        }
+        return lastPriceNode != null ? lastPriceNode.value : 0;
+    }
+    public void updatePrice(long timestamp, float priceChange) {
+        float newPrice = getPrice() + priceChange;
+        priceHistory.insert(timestamp, newPrice,timestamp);
+    }
 
+    public void removePriceUpdate(long timestamp) {
+        priceHistory.remove(timestamp);
+    }
     @Override
     public String toString() {
         return "Node{" + "key=" + key + ", value=" + value + '}';

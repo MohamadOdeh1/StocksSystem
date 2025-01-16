@@ -22,7 +22,6 @@ public class StockManager {
         }
 
         stocks.insert(stockId, price, timestamp);
-        System.out.println("Stock added: " + stockId);
     }
 
     public void removeStock(String stockId) {
@@ -31,47 +30,34 @@ public class StockManager {
         }
 
         stocks.remove(stockId);
-        System.out.println("Removed Stock: " + stockId);
     }
 
     public void updateStock(String stockId, long timestamp, Float priceDifference) {
-        if (stockId == null || stockId.isEmpty()) {
-            throw new IllegalArgumentException("Stock ID cannot be null or empty.");
-        }
-
-        if (priceDifference == null) {
-            throw new IllegalArgumentException("Price difference cannot be null.");
-        }
-
-        Node<String, Float> node = stocks.search(stocks.root, stockId);
-        if (node == null) {
+        System.out.printf("Updating stock ID: %s with timestamp: %d and price difference: %f\n", stockId, timestamp, priceDifference);
+        Node<String, Float> stockNode = stocks.search(stocks.root, stockId);
+        if (stockNode == null) {
+            System.out.printf("Stock ID %s not found during update\n", stockId);
             throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
         }
-
-        System.out.println("Original price of " + stockId + ": " + node.getValue());
-        Float newPrice = node.getValue() + priceDifference;
-        node.setValue(newPrice);
-        node.timestamp = timestamp;
-        System.out.println("Updated stock ID: " + stockId + " with new price: " + node.getValue());
+        stockNode.updatePrice(timestamp, priceDifference);
+        System.out.println("Updated stock ID: " + stockId + " with new price: " + stockNode.value);
     }
 
     public Float getStockPrice(String stockId) {
-        if (stockId == null || stockId.isEmpty()) {
-            throw new IllegalArgumentException("Stock ID cannot be null or empty.");
-        }
-
-        System.out.println("Searching for stock ID: " + stockId);
-        Node<String, Float> temp = stocks.search(stocks.root, stockId);
-        if (temp == null) {
+        Node<String, Float> stockNode = stocks.search(stocks.root, stockId);
+        if (stockNode == null) {
             throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
         }
-
-        System.out.println("Found stock ID: " + stockId + " with price: " + temp.getValue());
-        return temp.getValue();
+        return stockNode.getValue();
     }
 
     public void removeStockTimestamp(String stockId, long timestamp) {
-        // Implement the logic to remove a specific timestamp from a stock's history
+        Node<String, Float> stockNode = stocks.search(stocks.root, stockId);
+        if (stockNode == null) {
+            throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
+        }
+        stockNode.removePriceUpdate(timestamp);
+        System.out.println("Removed timestamp: " + timestamp + " from stock ID: " + stockId);
     }
 
     public int getAmountStocksInPriceRange(Float price1, Float price2) {

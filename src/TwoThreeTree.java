@@ -23,11 +23,9 @@ public class TwoThreeTree<K extends Comparable<K>, V> {
 
     public Node<K, V> search(Node<K, V> x, K key) {
         if (x == null || x.getKey() == null) {
-            System.out.println("Search: Node is null or key is sentinel");
             return null;
         } else {
             if (x.isLeaf()) {
-                System.out.println("Search: At leaf node with key " + x.getKey());
                 if (x.getKey().equals(key)) {
                     return x;
                 } else {
@@ -132,14 +130,12 @@ public class TwoThreeTree<K extends Comparable<K>, V> {
             }
 
             this.size += 1;
-            System.out.println("Inserted node with key: " + key);
         }
     }
 
     public void remove(K key) {
         Node<K, V> nodeToRemove = search(root, key);
         if (nodeToRemove == null) {
-            System.out.println("Key not found in the tree.");
             return;
         }
 
@@ -149,6 +145,8 @@ public class TwoThreeTree<K extends Comparable<K>, V> {
 
     public Node<K, V> borrowOrMerge(Node<K, V> y) {
         Node<K, V> z = y.getParentNode();
+        if (z == null) return null;
+
         if (y == z.getLeftChild()) {
             Node<K, V> x = z.getMiddleChild();
             if (x != null && x.getRightChild() != null) {
@@ -185,6 +183,11 @@ public class TwoThreeTree<K extends Comparable<K>, V> {
 
     public void deleteNode(Node<K, V> x) {
         Node<K, V> y = x.getParentNode();
+        if (y == null) {
+            root = null;
+            return;
+        }
+
         if (x == y.getLeftChild()) {
             y.setChildren(y.getMiddleChild(), y.getRightChild(), null);
         } else if (x == y.getMiddleChild()) {
