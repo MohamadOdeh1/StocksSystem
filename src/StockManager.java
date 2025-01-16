@@ -30,12 +30,8 @@ public class StockManager {
             throw new IllegalArgumentException("Stock ID cannot be null or empty.");
         }
 
-        Node<String, Float> node = stocks.search(stocks.root, stockId);
-        if (node == null) {
-            throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
-        }
-
-        // Implement the logic to remove the node from the tree
+        stocks.remove(stockId);
+        System.out.println("Removed Stock: " + stockId);
     }
 
     public void updateStock(String stockId, long timestamp, Float priceDifference) {
@@ -52,7 +48,11 @@ public class StockManager {
             throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
         }
 
-        node.setValue(node.getValue() + priceDifference);
+        System.out.println("Original price of " + stockId + ": " + node.getValue());
+        Float newPrice = node.getValue() + priceDifference;
+        node.setValue(newPrice);
+        node.timestamp = timestamp;
+        System.out.println("Updated stock ID: " + stockId + " with new price: " + node.getValue());
     }
 
     public Float getStockPrice(String stockId) {

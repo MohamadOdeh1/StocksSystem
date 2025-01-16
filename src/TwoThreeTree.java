@@ -136,6 +136,31 @@ public class TwoThreeTree<K extends Comparable<K>, V> {
         }
     }
 
+    public void remove(K key) {
+        Node<K, V> node = search(root, key);
+        if (node == null) {
+            throw new IllegalArgumentException("Key not found");
+        }
+        remove(node);
+    }
+
+    private void remove(Node<K, V> node) {
+        if (node.isLeaf()) {
+            Node<K, V> parent = node.getParentNode();
+            if (parent.getLeftChild() == node) {
+                parent.setChildren(null, parent.getMiddleChild(), parent.getRightChild());
+            } else if (parent.getMiddleChild() == node) {
+                parent.setChildren(parent.getLeftChild(), null, parent.getRightChild());
+            } else if (parent.getRightChild() == node) {
+                parent.setChildren(parent.getLeftChild(), parent.getMiddleChild(), null);
+            }
+            updateKey(parent);
+        } else {
+            // Handle the case where the node to be removed is internal
+            // This case is more complex and involves tree rebalancing
+        }
+    }
+
     public void printTree() {
         if (this.root == null) {
             System.out.println("The tree is empty.");
