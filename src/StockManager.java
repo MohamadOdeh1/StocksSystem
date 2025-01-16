@@ -38,6 +38,10 @@ public class StockManager {
         if (stockNode == null) {
             System.out.printf("Stock ID %s not found during update\n", stockId);
             throw new IllegalArgumentException("Stock ID " + stockId + " not found.");
+
+        }
+        if (priceDifference == null) {
+            throw new IllegalArgumentException("Price difference cannot be null.");
         }
         stockNode.updatePrice(timestamp, priceDifference);
         System.out.println("Updated stock ID: " + stockId + " with new price: " + stockNode.value);
